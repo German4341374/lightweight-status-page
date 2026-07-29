@@ -13,7 +13,7 @@ FROM php:8.5.8-fpm-alpine3.23 AS runtime
 
 RUN apk add --no-cache libpq \
     && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev \
-    && docker-php-ext-install -j"$(nproc)" opcache pdo_pgsql \
+    && docker-php-ext-install -j"$(nproc)" pdo_pgsql \
     && apk del .build-deps
 
 WORKDIR /var/www/html
