@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Acme Systems public service status">
+  <title>{% block title %}Acme Systems Status{% endblock %}</title>
+  <link rel="stylesheet" href="/assets/app.css">
+  <link rel="alternate" type="application/rss+xml" title="Incident feed" href="/feed.xml">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span><strong>Acme Systems</strong><small>Service status</small></span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="/">Current status</a>
+      <a href="/history">History</a>
+      <a href="/feed.xml">RSS</a>
+      {% if is_admin %}
+        <a class="nav-admin" href="/admin">Admin</a>
+      {% else %}
+        <a class="nav-admin" href="/admin/login">Admin</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  {% for flash in flash_messages %}
+    <div class="flash flash-{{ flash.type }}" role="status">{{ flash.message }}</div>
+  {% endfor %}
+
+  <main>{% block content %}{% endblock %}</main>
+
+  <footer>
+    <span><strong>Acme Systems</strong> status page</span>
+    <span><a href="/health">Health</a> · <a href="/feed.xml">Subscribe via RSS</a></span>
+  </footer>
+</body>
+</html>

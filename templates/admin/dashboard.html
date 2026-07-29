@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+{% block title %}Administration · Acme Systems{% endblock %}
+
+{% block content %}
+  <section class="admin-heading">
+    <div><p class="eyebrow">Operations console</p><h1>Status administration</h1><p>Publish service health and incident updates for customers.</p></div>
+    <form method="post" action="/admin/logout">
+      <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+      <button class="button button-secondary" type="submit">Sign out</button>
+    </form>
+  </section>
+
+  <section class="admin-grid">
+    <div class="admin-main">
+      <div class="panel">
+        <div class="panel-heading"><div><p class="eyebrow">Service health</p><h2>Current states</h2></div></div>
+        {% for service in services %}
+          <div class="admin-service">
+            <div><strong>{{ service.name }}</strong><small>{{ service.description }}</small></div>
+            <form method="post" action="/admin/services/{{ service.id }}/status">
+              <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+              <select name="status" aria-label="Status for {{ service.name }}">
+                {% for status in service_statuses %}
+                  <option value="{{ status.value }}" {{ status.value == service.status ? "selected" : "" }}>{{ status.label }}</option>
+                {% endfor %}
+              </select>
+              <button class="button button-small" type="submit">Update</button>
+            </form>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="panel">
+        <div class="panel-heading"><div><p class="eyebrow">Incidents</p><h2>Active communication</h2></div></div>
+        {% for incident in active_incidents %}
+          <a class="admin-incident" href="/admin/incidents/{{ incident.id }}">
+            <span class="severity severity-{{ incident.severity }}">{{ incident.severity|title }}</span>
+            <span><strong>{{ incident.title }}</strong><small>{{ incident.status|replace({'_': ' '})|title }} · {{ incident.started_at|date("M j, H:i") }}</small></span>
+            <b>Manage →</b>
+          </a>
+        {% else %}
+          <p class="panel-empty">No active incidents.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <aside class="admin-side">
+      <form class="panel form-stack" method="post" action="/admin/incidents">
+        <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+        <div><p class="eyebrow">New incident</p><h2>Publish incident</h2></div>
+        <label>Title<input name="title" maxlength="180" required></label>
+        <label>Severity<select name="severity">
+          {% for severity in incident_severities %}<option value="{{ severity.value }}">{{ severity.label }}</option>{% endfor %}
+        </select></label>
+        <label>Description<textarea name="description" rows="4" maxlength="4000" required></textarea></label>
+        <button class="button button-full" type="submit">Publish incident</button>
+      </form>
+
+      <form class="panel form-stack" method="post" action="/admin/services">
+        <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+        <div><p class="eyebrow">Inventory</p><h2>Add service</h2></div>
+        <label>Name<input name="name" maxlength="120" required></label>
+        <label>Description<textarea name="description" rows="3" maxlength="500" required></textarea></label>
+        <label>Initial status<select name="status">
+          {% for status in service_statuses %}<option value="{{ status.value }}">{{ status.label }}</option>{% endfor %}
+        </select></label>
+        <label>Display order<input type="number" name="display_order" min="0" max="10000" value="100" required></label>
+        <button class="button button-secondary button-full" type="submit">Add service</button>
+      </form>
+    </aside>
+  </section>
+{% endblock %}

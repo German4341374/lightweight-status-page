@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">Live service health</p>
+      <h1>Reliable systems.<br><span>Transparent updates.</span></h1>
+      <p>Current availability and incident communication for Acme Systems products.</p>
+    </div>
+    <div class="signal-card signal-{{ overall.value }}">
+      <div class="pulse"><span></span></div>
+      <div>
+        <strong>{{ overall.label }}</strong>
+        <p>{{ overall.message }}</p>
+      </div>
+      <time>Updated {{ "now"|date("H:i \\U\\T\\C") }}</time>
+    </div>
+  </section>
+
+  {% if active_incidents %}
+    <section class="section">
+      <div class="section-heading">
+        <div><p class="eyebrow">Active incidents</p><h2>What we are working on</h2></div>
+        <span class="count">{{ active_incidents|length }} active</span>
+      </div>
+      {% for incident in active_incidents %}
+        <article class="incident-card severity-{{ incident.severity }}">
+          <div class="incident-topline">
+            <span class="severity">{{ incident.severity|title }}</span>
+            <time>{{ incident.started_at|date("M j, H:i \\U\\T\\C") }}</time>
+          </div>
+          <h3>{{ incident.title }}</h3>
+          <p>{{ incident.description }}</p>
+          <a href="/history#incident-{{ incident.id }}">View incident timeline →</a>
+        </article>
+      {% endfor %}
+    </section>
+  {% endif %}
+
+  <section class="section">
+    <div class="section-heading">
+      <div><p class="eyebrow">Services</p><h2>System availability</h2></div>
+      <span class="period">90-day uptime</span>
+    </div>
+    <div class="service-grid">
+      {% for service in services %}
+        <article class="service-card">
+          <div class="service-icon"><span></span></div>
+          <div class="service-copy">
+            <h3>{{ service.name }}</h3>
+            <p>{{ service.description }}</p>
+          </div>
+          <div class="service-metrics">
+            <span class="status status-{{ service.status }}"><i></i>{{ service.status_label }}</span>
+            <strong>{{ service.uptime|number_format(3) }}%</strong>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="subscribe">
+    <div><p class="eyebrow">Stay informed</p><h2>Incident updates, without the noise.</h2></div>
+    <a class="button" href="/feed.xml">Subscribe to RSS</a>
+  </section>
+{% endblock %}

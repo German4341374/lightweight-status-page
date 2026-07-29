@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block title %}Administrator sign in · Acme Systems{% endblock %}
+
+{% block content %}
+  <section class="auth-shell">
+    <div class="auth-message">
+      <p class="eyebrow">Operations console</p>
+      <h1>Publish clear updates when every minute matters.</h1>
+      <p>This restricted area is for authorized status page operators.</p>
+    </div>
+    <form class="auth-card" method="post" action="/admin/login">
+      <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+      <div><p class="eyebrow">Administrator</p><h2>Sign in</h2></div>
+      {% if error %}<div class="form-error" role="alert">{{ error }}</div>{% endif %}
+      <label>Username<input name="username" autocomplete="username" maxlength="120" required autofocus></label>
+      <label>Password<input type="password" name="password" autocomplete="current-password" maxlength="500" required></label>
+      <button class="button button-full" type="submit">Continue</button>
+      <small>Failed sign-in attempts are rate limited.</small>
+    </form>
+  </section>
+{% endblock %}

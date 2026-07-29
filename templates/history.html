@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block title %}Incident History · Acme Systems{% endblock %}
+
+{% block content %}
+  <section class="page-intro">
+    <p class="eyebrow">Last 90 days</p>
+    <h1>Incident history</h1>
+    <p>A chronological record of disruptions, maintenance, and recovery updates.</p>
+  </section>
+
+  <section class="timeline">
+    {% for incident in recent_incidents %}
+      <article class="history-card" id="incident-{{ incident.id }}">
+        <header>
+          <div>
+            <span class="severity severity-{{ incident.severity }}">{{ incident.severity|title }}</span>
+            <h2>{{ incident.title }}</h2>
+          </div>
+          <span class="incident-status">{{ incident.status|replace({'_': ' '})|title }}</span>
+        </header>
+        <p>{{ incident.description }}</p>
+        <div class="updates">
+          {% for update in incident.updates %}
+            <div class="update">
+              <span class="timeline-dot"></span>
+              <div>
+                <strong>{{ update.status|replace({'_': ' '})|title }}</strong>
+                <p>{{ update.message }}</p>
+                <time>{{ update.created_at|date("M j, Y · H:i \\U\\T\\C") }}</time>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </article>
+    {% else %}
+      <div class="empty-state"><h2>No incidents</h2><p>No incidents were published during this period.</p></div>
+    {% endfor %}
+  </section>
+{% endblock %}

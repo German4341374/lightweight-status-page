@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block title %}Manage {{ incident.title }} · Acme Systems{% endblock %}
+
+{% block content %}
+  <section class="admin-heading">
+    <div><a class="back-link" href="/admin">← Back to administration</a><p class="eyebrow">Incident #{{ incident.id }}</p><h1>{{ incident.title }}</h1><p>{{ incident.description }}</p></div>
+    <span class="severity severity-{{ incident.severity }}">{{ incident.severity|title }}</span>
+  </section>
+
+  <section class="incident-manage">
+    <div class="panel">
+      <div class="panel-heading"><div><p class="eyebrow">Timeline</p><h2>Published updates</h2></div><span class="incident-status">{{ incident.status|title }}</span></div>
+      <div class="updates">
+        {% for update in incident.updates %}
+          <div class="update">
+            <span class="timeline-dot"></span>
+            <div><strong>{{ update.status|title }}</strong><p>{{ update.message }}</p><time>{{ update.created_at|date("M j, Y · H:i \\U\\T\\C") }}</time></div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <aside>
+      {% if incident.status != "resolved" %}
+        <form class="panel form-stack" method="post" action="/admin/incidents/{{ incident.id }}/updates">
+          <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+          <div><p class="eyebrow">Communication</p><h2>Add update</h2></div>
+          <label>Status<select name="status">
+            {% for status in incident_statuses %}
+              {% if status.value != "resolved" %}<option value="{{ status.value }}">{{ status.label }}</option>{% endif %}
+            {% endfor %}
+          </select></label>
+          <label>Message<textarea name="message" rows="5" maxlength="4000" required></textarea></label>
+          <button class="button button-full" type="submit">Publish update</button>
+        </form>
+        <form class="panel form-stack resolve-form" method="post" action="/admin/incidents/{{ incident.id }}/resolve">
+          <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+          <div><p class="eyebrow">Recovery</p><h2>Resolve incident</h2></div>
+          <label>Resolution message<textarea name="message" rows="3" maxlength="4000" required>The incident has been resolved and service has returned to normal.</textarea></label>
+          <button class="button button-success button-full" type="submit">Mark resolved</button>
+        </form>
+      {% endif %}
+    </aside>
+  </section>
+{% endblock %}
