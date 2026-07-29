@@ -1,0 +1,111 @@
+name: lightweight-status-page
+
+services:
+  database:
+    image: postgres:18.4-alpine3.24
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-status_page}
+      POSTGRES_USER: ${POSTGRES_USER:-status_page}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local_development_only}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    networks:
+      - backend
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  php:
+    build:
+      context: .
+      target: runtime
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: ${APP_URL:-http://localhost:8080}
+      APP_KEY: ${APP_KEY:-development-only-change-before-production}
+      DB_DSN: pgsql:host=database;port=5432;dbname=${POSTGRES_DB:-status_page}
+      DB_USER: ${POSTGRES_USER:-status_page}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-local_development_only}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-status-admin}
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:-$$2y$$12$$/yZZTsrTjkHEDrz5TUDqxunfNPkVvplBi6uvPx4E9PLBSYzlylDHi}
+      SESSION_SECURE: ${SESSION_SECURE:-false}
+      SESSION_NAME: ${SESSION_NAME:-status_page_session}
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@fsockopen('127.0.0.1', 9000) ? 0 : 1);"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+      start_period: 20s
+    networks:
+      - backend
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+      - /var/www/html/storage:size=16m,mode=0770,uid=82,gid=82
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: 256M
+
+  web:
+    image: nginx:1.28.0-alpine3.21
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    volumes:
+      - ./public:/var/www/html/public:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      php:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+      start_period: 15s
+    networks:
+      - frontend
+      - backend
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx:size=16m
+      - /var/run:size=4m
+      - /tmp:size=8m
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 64M
+
+networks:
+  frontend:
+  backend:
+    internal: true
+
+volumes:
+  postgres_data:

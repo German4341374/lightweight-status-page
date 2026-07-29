@@ -1,0 +1,10 @@
+/.env
+/.phpunit.cache/
+/.phpstan-cache/
+/.php-cs-fixer.cache
+/coverage/
+/storage/
+/vendor/
+composer.phar
+*.log
+!.gitkeep
