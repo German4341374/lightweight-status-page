@@ -1,7 +1,7 @@
 # Lightweight Status Page
 
 [![CI](https://github.com/German4341374/lightweight-status-page/actions/workflows/ci.yml/badge.svg)](https://github.com/German4341374/lightweight-status-page/actions/workflows/ci.yml)
-[![PHP](https://img.shields.io/badge/PHP-8.5.9-777BB4?logo=php)](https://www.php.net/)
+[![PHP](https://img.shields.io/badge/PHP-8.5.8-777BB4?logo=php)](https://www.php.net/)
 [![Slim](https://img.shields.io/badge/Slim-4.15.2-74a045)](https://www.slimframework.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -93,7 +93,7 @@ It supports login throttling without persisting raw addresses.
 
 ## Technology stack
 
-- PHP 8.5.9 and PHP-FPM
+- PHP 8.5.8 and PHP-FPM
 - Slim 4.15.2 with Slim PSR-7
 - Twig 3
 - PostgreSQL 18

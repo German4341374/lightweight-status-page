@@ -9,7 +9,7 @@ RUN composer install \
     --no-scripts \
     --optimize-autoloader
 
-FROM php:8.5.9-fpm-alpine3.22 AS runtime
+FROM php:8.5.8-fpm-alpine3.23 AS runtime
 
 RUN apk add --no-cache libpq \
     && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev \
