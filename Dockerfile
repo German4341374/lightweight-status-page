@@ -1,4 +1,4 @@
-FROM composer:2.10.2 AS dependencies
+FROM composer:2.10.3 AS dependencies
 
 WORKDIR /app
 COPY composer.json composer.lock ./
