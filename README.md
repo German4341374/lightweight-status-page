@@ -268,7 +268,7 @@ Status changes are persisted immediately. If a reverse proxy cache is added late
 - No email, webhooks, SMS, or third-party incident integrations.
 - Session storage uses PHP's default local backend, suitable for one application replica.
 
-## Future improvements
+## Possible next steps
 
 - Optional external health-check ingestion with operator approval.
 - Shared Redis session storage for multiple PHP replicas.
