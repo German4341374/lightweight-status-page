@@ -5,9 +5,12 @@
 [![Slim](https://img.shields.io/badge/Slim-4.15.2-74a045)](https://www.slimframework.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-A compact, self-hosted status page for small companies that need a clear public view of service
-health and a focused interface for manually publishing incidents. The application favors a small
-dependency surface, explicit SQL, and operational clarity over a large framework.
+A status page you can host yourself. Visitors can see whether your services are working,
+read incident updates, and check recent history. An admin signs in to change a status
+or post an update.
+
+It's a PHP app using Slim, Twig, and PostgreSQL, with Nginx in front. Docker Compose runs
+the whole setup locally.
 
 ![Public status page](docs/images/status-page.png)
 
